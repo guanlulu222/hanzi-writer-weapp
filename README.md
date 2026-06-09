@@ -78,11 +78,13 @@ TypeScript 编译配置增加 `target: 'es5'` 以保证最大兼容性，同时 
 
 ### 安装
 
-在微信小程序项目中安装 `hanzi-writer`：
+在微信小程序项目中安装：
 
 ```bash
-npm install hanzi-writer
+npm install hanzi-writer-miniprogram
 ```
+
+安装后在微信开发者工具中点击 **工具 → 构建 npm**，即会自动将 `dist/index.cjs.js` 复制到 `miniprogram_npm/hanzi-writer-miniprogram/index.js` 供项目使用。
 
 ### 基本用法
 
@@ -106,7 +108,7 @@ npm install hanzi-writer
 #### 2. TS/JS 页面逻辑
 
 ```typescript
-import HanziWriter from 'hanzi-writer';
+import HanziWriter from 'hanzi-writer-miniprogram';
 
 Page({
   _writer: null as any,
