@@ -7,6 +7,9 @@ import {
 import RenderState from './RenderState';
 import { RecursivePartial } from './typings/types';
 
+// Mini program: NodeJS namespace not available when types:[] is set
+declare namespace NodeJS { type Timeout = number; }
+
 /** Used by `Mutation` & `Delay` */
 export interface GenericMutation<
   TRenderStateClass extends GenericRenderStateClass = RenderState

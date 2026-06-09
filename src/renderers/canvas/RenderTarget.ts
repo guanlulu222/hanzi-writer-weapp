@@ -48,13 +48,15 @@ export default class RenderTarget extends RenderTargetBase<HTMLCanvasElement> {
   }
 
   // Mini program canvas 不支持 setAttribute / getBoundingClientRect
-  updateDimensions(width: number, height: number) {
-    this.node.width = width
-    this.node.height = height
+  updateDimensions(width: string | number, height: string | number) {
+    this.node.width = typeof width === 'number' ? width : parseInt(String(width), 10);
+    this.node.height = typeof height === 'number' ? height : parseInt(String(height), 10);
   }
 
   getBoundingClientRect() {
-    return { left: 0, top: 0, width: this.node.width, height: this.node.height }
+    const { width, height } = this.node;
+    // Mini program: canvas has no getBoundingClientRect, return virtual DOMRect
+    return { left: 0, top: 0, width, height, x: 0, y: 0, bottom: height, right: width, toJSON: () => '' };
   }
 
   private _mpEvent(evt: any, x: number, y: number): BoundEvent {

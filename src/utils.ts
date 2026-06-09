@@ -1,5 +1,8 @@
 import { ColorObject, RecursivePartial } from './typings/types';
 
+// Mini program: declare global for environments without @types/node
+declare const global: any;
+
 // hacky way to get around rollup not properly setting `global` to `window` in browser
 const globalObj = typeof window === 'undefined' ? global : window;
 

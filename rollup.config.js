@@ -15,7 +15,7 @@ export default [
       {
         file: pkg.main,
         format: 'cjs',
-        sourcemap: true,
+        sourcemap: false,
         exports: 'auto',
       },
       {
@@ -56,7 +56,7 @@ export default [
         babelHelpers: 'bundled',
       }),
       license({
-        banner: `Hanzi Writer v<%= pkg.version %> | https://chanind.github.io/hanzi-writer`,
+        banner: `Hanzi Writer 微信小程序适配版 v<%= pkg.version %> | 基于 chanind/hanzi-writer`,
       }),
     ],
   },
