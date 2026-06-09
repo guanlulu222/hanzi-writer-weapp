@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> 本项目是 [chanind/hanzi-writer](https://github.com/chanind/hanzi-writer) 的微信小程序适配分支，在原版基础上修改了渲染层代码，使其能够在微信小程序的 Canvas 环境中正常工作。
+> 本项目是 [chanind/hanzi-writer](https://github.com/chanind/hanzi-writer) 的微信小程序适配分支，在原版基础上修改了渲染层代码，使其能够在微信小程序的 Canvas 2D 环境中正常工作。
 
 Hanzi Writer 是一个免费开源的 JavaScript 汉字笔顺动画和笔画练习库，支持简体和繁体汉字。
 
@@ -14,12 +14,12 @@ Hanzi Writer 是一个免费开源的 JavaScript 汉字笔顺动画和笔画练�
 
 - [为什么需要适配](#为什么需要适配)
 - [源码修改说明](#源码修改说明)
-- [快速开始（小程序）](#快速开始小程序)
+- [快速开始](#快速开始)
 - [API 说明](#api-说明)
-- [一键构建脚本](#一键构建脚本)
-- [构建流程详解](#构建流程详解)
+- [发布到 npm](#发布到-npm)
+- [本地开发](#本地开发)
 - [数据结构与数据源](#数据结构与数据源)
-- [贡献](#贡献)
+- [与上游差异对照](#与上游差异对照)
 - [许可](#许可)
 
 ---
@@ -70,21 +70,19 @@ canvas.addEventListener('touchstart', (e) => {
 
 ### 4. `rollup.config.js`
 
-TypeScript 编译配置增加 `target: 'es5'` 以保证最大兼容性，同时 `skipLibCheck: true` 跳过类型库检查以加速构建。
+TypeScript 编译配置增加 `target: 'es5'` 以保证最大兼容性，同时 `skipLibCheck: true` 跳过类型库检查以加速构建。CJS 输出关闭 `sourcemap`，避免 `//# sourceMappingURL=` 在小程序构建 npm 时产生警告。
 
 ---
 
-## 快速开始（小程序）
+## 快速开始
 
 ### 安装
 
-在微信小程序项目中安装：
-
 ```bash
-npm install hanzi-writer-miniprogram
+npm install hanzi-writer-wechatmini
 ```
 
-安装后在微信开发者工具中点击 **工具 → 构建 npm**，即会自动将 `dist/index.cjs.js` 复制到 `miniprogram_npm/hanzi-writer-miniprogram/index.js` 供项目使用。
+安装后在微信开发者工具中点击 **工具 → 构建 npm**，即会自动将 `dist/index.cjs.js` 复制到 `miniprogram_npm/hanzi-writer-wechatmini/index.js` 供项目使用。
 
 ### 基本用法
 
@@ -108,7 +106,7 @@ npm install hanzi-writer-miniprogram
 #### 2. TS/JS 页面逻辑
 
 ```typescript
-import HanziWriter from 'hanzi-writer-miniprogram';
+import HanziWriter from 'hanzi-writer-wechatmini';
 
 Page({
   _writer: null as any,
@@ -227,83 +225,51 @@ interface HanziWriterOptions {
 
 ---
 
-## 一键构建脚本
-
-项目提供了 `build-mp.py` 一键构建脚本，用于编译修改后的源码并注入到目标小程序项目：
+## 发布到 npm
 
 ```bash
-# 带自动预览
-python build-mp.py
+# 1. 登录 npm
+npm login
 
-# 仅构建+注入，不预览
-python build-mp.py --no-preview
+# 2. 构建并发布（prepublishOnly 会自动编译 dist）
+npm publish
+
+# 3. 在小程序项目中安装
+cd your-mini-program
+npm install hanzi-writer-wechatmini
+# 然后在微信开发者工具中点击「工具 → 构建 npm」
 ```
 
-### 工作流程
+发布前如需验证构建是否正常：
 
-```
-┌─────────────────────────────────────────────────┐
-│  1. rollup -c                                    │
-│     编译 TypeScript 源码 → dist/index.cjs.js      │
-├─────────────────────────────────────────────────┤
-│  2. 清理构建产物                                  │
-│     移除 module.exports / sourcemap 行           │
-│     重新包装 module.exports = HanziWriter         │
-├─────────────────────────────────────────────────┤
-│  3. 注入到小程序项目                              │
-│     写入 xgzb-mini 的 miniprogram_npm/hanzi-writer│
-├─────────────────────────────────────────────────┤
-│  4. 自动预览（可选）                              │
-│     调用微信开发者工具 autopreview 接口             │
-└─────────────────────────────────────────────────┘
-```
-
-### 路径配置
-
-脚本中硬编码了以下路径，可根据项目调整 `build-mp.py` 中的变量：
-
-```python
-FORK_DIR     = Path(r'D:\project\opensource\hanzi-writer-miniprogram')  # 源码目录
-MINI_PROJECT = Path(r'D:\project\xgzb\xgzb-mini')                        # 目标小程序
-HW_DIST      = FORK_DIR / 'dist' / 'index.cjs.js'                        # 构建产物
-HW_TARGET    = MINI_PROJECT / '...' / 'miniprogram_npm' / 'hanzi-writer' / 'index.js'  # 注入位置
+```bash
+npm run build      # 输出到 dist/
+npm run typecheck  # 类型检查
+npm test           # 运行测试
 ```
 
 ---
 
-## 构建流程详解
-
-如需手动构建，步骤如下：
-
-### 1. 安装依赖
+## 本地开发
 
 ```bash
-cd hanzi-writer-miniprogram
-yarn install
-# 或
-npm install
-```
+git clone https://github.com/YOUR_USERNAME/hanzi-writer-wechatmini.git
+cd hanzi-writer-wechatmini
 
-### 2. 编译
-
-```bash
-yarn build
-# 或
-npm run build
+yarn install       # 安装依赖
+yarn build         # 编译
+yarn test          # 运行测试
+yarn typecheck     # TypeScript 类型检查
 ```
 
 构建产物输出到 `dist/` 目录：
 
 | 文件 | 格式 | 说明 |
 |------|------|------|
-| `dist/index.cjs.js` | CommonJS | 小程序主使用（需 npm 构建） |
+| `dist/index.cjs.js` | CommonJS | **小程序构建 npm 使用的入口** |
 | `dist/index.esm.js` | ES Module | 现代打包工具使用 |
 | `dist/hanzi-writer.js` | IIFE | 浏览器直接引用 |
 | `dist/hanzi-writer.min.js` | IIFE (minified) | 浏览器引用（压缩版） |
-
-### 3. 注入到小程序
-
-将 `dist/index.cjs.js` 的内容复制到小程序的 `miniprogram_npm/hanzi-writer/index.js`，并确保文件末尾有 `module.exports = HanziWriter;`。
 
 ---
 
@@ -311,7 +277,7 @@ npm run build
 
 Hanzi Writer 使用的汉字 SVG 和笔顺数据来自 [Make me a Hanzi](https://github.com/skishore/makemeahanzi) 项目，经过微调后托管在 [Hanzi Writer Data](https://github.com/chanind/hanzi-writer-data) 仓库。
 
-默认情况下，字符数据从 jsDelivr CDN 加载。在小程序中，你可能需要实现自定义 `charDataLoader` 来配合离线或内网环境。
+默认情况下，字符数据从 jsDelivr CDN 加载。在小程序中，你可能需要实现自定义 `charDataLoader` 来配合离线或内网环境：
 
 ```typescript
 const writer = HanziWriter.create(canvas, '汉', {
@@ -324,29 +290,17 @@ const writer = HanziWriter.create(canvas, '汉', {
 
 ---
 
-## 与上游的差异对照
+## 与上游差异对照
 
 | 文件 | 改动内容 | 影响范围 |
 |------|---------|---------|
-| `src/renderers/canvas/RenderTarget.ts` | `init()` 去除 DOM 操作；新增 `emitTouch*` 方法；`getBoundingClientRect()` 重写 | Canvas 初始化、触摸交互 |
+| `src/renderers/canvas/RenderTarget.ts` | `init()` 去除 DOM 操作；新增 `emitTouch*` 方法；`getBoundingClientRect()` 重写；`updateDimensions` 兼容 `string\|number` | Canvas 初始化、触摸交互 |
 | `src/renderers/RenderTargetBase.ts` | `addPointerEndListener` DOM 事件改为节点事件 | Canvas/SVG 触摸结束监听 |
 | `src/renderers/canvas/CharacterRenderer.ts` | 禁用 Path2D（传入 `false`） | Canvas 笔画渲染 |
-| `rollup.config.js` | 增加 `es5` target + `skipLibCheck` | 构建兼容性 |
-
----
-
-## 贡献
-
-欢迎提交 Pull Request！本项目从上游 [chanind/hanzi-writer](https://github.com/chanind/hanzi-writer) fork 而来，原则上只接受小程序适配相关的改动。
-
-### 本地开发
-
-```bash
-yarn install
-yarn test        # 运行测试
-yarn build       # 构建项目
-yarn typecheck   # TypeScript 类型检查
-```
+| `src/utils.ts` | 添加 `declare const global: any` | 解决 `types: []` 下找不到 `global` 的类型错误 |
+| `src/Mutation.ts` | 添加 `declare namespace NodeJS` | 解决 `NodeJS.Timeout` 类型缺失 |
+| `rollup.config.js` | `target: es5` + `skipLibCheck` + CJS `sourcemap: false` | 构建兼容性与产出清洁度 |
+| `package.json` | 改名为 `hanzi-writer-wechatmini`，添加 `miniprogram` 字段，fix Windows build 脚本 | npm 发布与安装 |
 
 ---
 
