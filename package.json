@@ -3,7 +3,10 @@
   "version": "3.0.1",
   "author": "David Chanin <chanindav@gmail.com> (http://chanind.github.io/hanzi-writer/)",
   "description": "Hanzi Writer 微信小程序适配版 — 基于 chanind/hanzi-writer v3.0.0，修复 Canvas 2D 兼容性问题，npm 直装即用。",
-  "repository": "chanind/hanzi-writer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chanind/hanzi-writer.git"
+  },
   "main": "dist/index.cjs.js",
   "miniprogram": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
