@@ -7,7 +7,8 @@ export default class CharacterRenderer {
   _strokeRenderers: StrokeRenderer[];
 
   constructor(character: Character) {
-    this._strokeRenderers = character.strokes.map((stroke) => new StrokeRenderer(stroke));
+    // Mini program: disable Path2D to avoid "new Path2D() should not be used" warning
+    this._strokeRenderers = character.strokes.map((stroke) => new StrokeRenderer(stroke, false));
   }
 
   render(

@@ -43,6 +43,11 @@ export default [
       filesize(),
       ts({
         transpiler: 'babel',
+        tsconfig: {
+          skipLibCheck: true,
+          target: 'es5',
+          types: [],
+        },
       }),
       resolve({ extensions }),
       babel({

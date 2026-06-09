@@ -38,9 +38,9 @@ export default class RenderTargetBase<
   }
 
   addPointerEndListener(callback: () => void) {
-    // TODO: find a way to not need global listeners
-    document.addEventListener('mouseup', callback);
-    document.addEventListener('touchend', callback);
+    // Mini program compatibility: use node events instead of document
+    this.node.addEventListener('mouseup', callback);
+    this.node.addEventListener('touchend', callback);
   }
 
   getBoundingClientRect() {
