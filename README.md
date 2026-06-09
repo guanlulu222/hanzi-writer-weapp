@@ -16,8 +16,7 @@ Hanzi Writer 是一个免费开源的 JavaScript 汉字笔顺动画和笔画练�
 - [源码修改说明](#源码修改说明)
 - [快速开始](#快速开始)
 - [API 说明](#api-说明)
-- [发布到 npm](#发布到-npm)
-- [本地开发](#本地开发)
+- [构建与开发](#构建与开发)
 - [数据结构与数据源](#数据结构与数据源)
 - [与上游差异对照](#与上游差异对照)
 - [许可](#许可)
@@ -225,37 +224,9 @@ interface HanziWriterOptions {
 
 ---
 
-## 发布到 npm
+## 构建与开发
 
 ```bash
-# 1. 登录 npm
-npm login
-
-# 2. 构建并发布（prepublishOnly 会自动编译 dist）
-npm publish
-
-# 3. 在小程序项目中安装
-cd your-mini-program
-npm install hanzi-writer-wechatmini
-# 然后在微信开发者工具中点击「工具 → 构建 npm」
-```
-
-发布前如需验证构建是否正常：
-
-```bash
-npm run build      # 输出到 dist/
-npm run typecheck  # 类型检查
-npm test           # 运行测试
-```
-
----
-
-## 本地开发
-
-```bash
-git clone https://github.com/YOUR_USERNAME/hanzi-writer-wechatmini.git
-cd hanzi-writer-wechatmini
-
 yarn install       # 安装依赖
 yarn build         # 编译
 yarn test          # 运行测试
@@ -300,7 +271,7 @@ const writer = HanziWriter.create(canvas, '汉', {
 | `src/utils.ts` | 添加 `declare const global: any` | 解决 `types: []` 下找不到 `global` 的类型错误 |
 | `src/Mutation.ts` | 添加 `declare namespace NodeJS` | 解决 `NodeJS.Timeout` 类型缺失 |
 | `rollup.config.js` | `target: es5` + `skipLibCheck` + CJS `sourcemap: false` | 构建兼容性与产出清洁度 |
-| `package.json` | 改名为 `hanzi-writer-wechatmini`，添加 `miniprogram` 字段，fix Windows build 脚本 | npm 发布与安装 |
+| `package.json` | 添加 `miniprogram` 字段，Windows 兼容 build 脚本 | 微信小程序 npm 支持 |
 
 ---
 
