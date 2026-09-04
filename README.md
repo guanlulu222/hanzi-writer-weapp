@@ -10,6 +10,20 @@ Hanzi Writer 是一个免费开源的 JavaScript 汉字笔顺动画和笔画练�
 
 ---
 
+## ⚠️ 本次更新说明（重要）
+
+**修复：微信小程序中笔顺动画卡在第一笔、来回播放无法完成的问题。**
+
+- **症状**：调用 `animateCharacter()` 后，笔顺动画只在第一笔上来回往复，永远画不完，后面的笔画一笔都不画。
+- **根因**：动画时钟时基不同源。小程序没有 `performance` 全局对象，`performanceNow` 退化为 `Date.now()`（epoch 毫秒级，约 1.7e12）；而 Taro / 小程序注入的 `requestAnimationFrame` 回调时间戳是 `Date.now() - loadTime`（几千级）。两者相差整个 epoch，导致动画进度计算 `progress = (rafTimestamp - performanceNow()) / duration` 长期为负、卡在第一笔来回震荡。
+- **修复方式**：在 `src/utils.ts` 中新增 `hasPerformance` 判断——当环境没有 `performance` 时，`requestAnimationFrame` / `cancelAnimationFrame` 统一退回 `setTimeout` / `clearTimeout` 兜底，回调时间戳改用 `performanceNow()`，保证 `performanceNow`、`requestAnimationFrame`、`cancelAnimationFrame` 三个时钟同源。H5 环境（有 `performance`）行为完全不变。
+
+| 文件 | 改动内容 |
+|------|---------|
+| `src/utils.ts` | 新增 `hasPerformance` 判断；无 `performance` 时三时钟退回 `Date.now()` + `setTimeout`/`clearTimeout` 兜底 |
+
+---
+
 ## 目录
 
 - [为什么需要适配](#为什么需要适配)
@@ -40,7 +54,7 @@ Hanzi Writer 是一个免费开源的 JavaScript 汉字笔顺动画和笔画练�
 
 ## 源码修改说明
 
-基于原版 `v3.0.0` 源码，共修改 **4 个核心文件**：
+基于原版 `v3.0.0` 源码，共修改 **5 个核心文件**：
 
 ### 1. `src/renderers/canvas/RenderTarget.ts`（核心改动）
 
@@ -70,6 +84,12 @@ canvas.addEventListener('touchstart', (e) => {
 ### 4. `rollup.config.js`
 
 TypeScript 编译配置增加 `target: 'es5'` 以保证最大兼容性，同时 `skipLibCheck: true` 跳过类型库检查以加速构建。CJS 输出关闭 `sourcemap`，避免 `//# sourceMappingURL=` 在小程序构建 npm 时产生警告。
+
+### 5. `src/utils.ts`（时钟时基修复）
+
+修复小程序中笔顺动画卡在第一笔的问题。小程序没有 `performance` 全局对象，原实现里 `performanceNow` 退化为 `Date.now()`（epoch 毫秒级），而 Taro 注入的 `requestAnimationFrame` 回调时间戳是 `Date.now() - loadTime`（几千级），两者时基差整个 epoch，导致动画进度计算错乱、卡在第一笔来回播放。
+
+改动新增 `hasPerformance` 判断：当环境没有 `performance` 时，`requestAnimationFrame` / `cancelAnimationFrame` 统一退回 `setTimeout` / `clearTimeout` 兜底，回调时间戳改用 `performanceNow()`，保证三个时钟同源。H5（有 `performance`）行为不变。详见顶部「本次更新说明」。
 
 ---
 
@@ -268,7 +288,7 @@ const writer = HanziWriter.create(canvas, '汉', {
 | `src/renderers/canvas/RenderTarget.ts` | `init()` 去除 DOM 操作；新增 `emitTouch*` 方法；`getBoundingClientRect()` 重写；`updateDimensions` 兼容 `string\|number` | Canvas 初始化、触摸交互 |
 | `src/renderers/RenderTargetBase.ts` | `addPointerEndListener` DOM 事件改为节点事件 | Canvas/SVG 触摸结束监听 |
 | `src/renderers/canvas/CharacterRenderer.ts` | 禁用 Path2D（传入 `false`） | Canvas 笔画渲染 |
-| `src/utils.ts` | 添加 `declare const global: any` | 解决 `types: []` 下找不到 `global` 的类型错误 |
+| `src/utils.ts` | 添加 `declare const global: any`；新增 `hasPerformance` 判断，无 `performance` 时三时钟退回 `Date.now()` + `setTimeout`/`clearTimeout` 兜底 | 解决 `types: []` 下找不到 `global` 的类型错误；修复小程序笔顺动画卡在第一笔 |
 | `src/Mutation.ts` | 添加 `declare namespace NodeJS` | 解决 `NodeJS.Timeout` 类型缺失 |
 | `rollup.config.js` | `target: es5` + `skipLibCheck` + CJS `sourcemap: false` | 构建兼容性与产出清洁度 |
 | `package.json` | 添加 `miniprogram` 字段，Windows 兼容 build 脚本 | 微信小程序 npm 支持 |
