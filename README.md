@@ -101,10 +101,10 @@ TypeScript 编译配置增加 `target: 'es5'` 以保证最大兼容性，同时 
 
 ```bash
 # 方式一：直接从 GitHub 安装（推荐，仓库已提交 dist 产物，装完即可用）
-npm install git+https://github.com/guanlulu222/hanzi-writer-wechat.git
+npm install git+https://github.com/guanlulu222/hanzi-writer-weapp.git
 
 # 方式二：HTTPS 被拦截时用 SSH
-npm install git+ssh://git@github.com:guanlulu222/hanzi-writer-wechat.git
+npm install git+ssh://git@github.com:guanlulu222/hanzi-writer-weapp.git
 
 # 方式三：npm 发布后（需先 npm login）
 npm install hanzi-writer-weapp
@@ -115,7 +115,7 @@ npm install hanzi-writer-weapp
 ```json
 {
   "dependencies": {
-    "hanzi-writer-weapp": "github:guanlulu222/hanzi-writer-wechat#master"
+    "hanzi-writer-weapp": "github:guanlulu222/hanzi-writer-weapp#master"
   }
 }
 ```
