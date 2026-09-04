@@ -6,13 +6,24 @@ declare const global: any;
 // hacky way to get around rollup not properly setting `global` to `window` in browser
 const globalObj = typeof window === 'undefined' ? global : window;
 
-export const performanceNow =
-  (globalObj.performance && (() => globalObj.performance.now())) || (() => Date.now());
-export const requestAnimationFrame =
-  globalObj.requestAnimationFrame?.bind(globalObj) ||
-  ((callback) => setTimeout(() => callback(performanceNow()), 1000 / 60));
-export const cancelAnimationFrame =
-  globalObj.cancelAnimationFrame?.bind(globalObj) || clearTimeout;
+// 微信小程序里没有 performance 全局对象，此时 Taro 注入的 requestAnimationFrame
+// 回调时间戳（Date.now() - loadTime）与 performanceNow 退化成的 Date.now() 时基不同源，
+// 会让笔顺动画进度错乱、卡在第一笔来回播放。因此当 performance 缺失时，
+// 整体退回 setTimeout 兜底（其回调时间戳用 performanceNow()，保证三个时钟同源）。
+const hasPerformance = !!globalObj.performance;
+
+export const performanceNow = hasPerformance
+  ? () => globalObj.performance.now()
+  : () => Date.now();
+
+export const requestAnimationFrame = hasPerformance
+  ? globalObj.requestAnimationFrame?.bind(globalObj) ||
+      ((callback) => setTimeout(() => callback(performanceNow()), 1000 / 60))
+  : (callback) => setTimeout(() => callback(performanceNow()), 1000 / 60);
+
+export const cancelAnimationFrame = hasPerformance
+  ? globalObj.cancelAnimationFrame?.bind(globalObj) || clearTimeout
+  : clearTimeout;
 
 // Object.assign polyfill, because IE :/
 export const _assign = function (target: any, ...overrides: any[]) {
