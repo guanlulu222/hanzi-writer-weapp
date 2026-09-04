@@ -97,11 +97,29 @@ TypeScript 编译配置增加 `target: 'es5'` 以保证最大兼容性，同时 
 
 ### 安装
 
+本仓库包含**时钟时基修复**（解决小程序笔顺动画卡在第一笔的 bug，见顶部「本次更新说明」）。上游 npm 包 `hanzi-writer-wechatmini@3.0.1` 尚未包含此修复，请优先安装本仓库版本：
+
 ```bash
-npm install hanzi-writer-wechatmini
+# 方式一：直接从 GitHub 安装（推荐，仓库已提交 dist 产物，装完即可用）
+npm install git+https://github.com/guanlulu222/hanzi-writer-wechat.git
+
+# 方式二：HTTPS 被拦截时用 SSH
+npm install git+ssh://git@github.com:guanlulu222/hanzi-writer-wechat.git
+```
+
+或在 `package.json` 里直接写依赖：
+
+```json
+{
+  "dependencies": {
+    "hanzi-writer-wechatmini": "github:guanlulu222/hanzi-writer-wechat#master"
+  }
+}
 ```
 
 安装后在微信开发者工具中点击 **工具 → 构建 npm**，即会自动将 `dist/index.cjs.js` 复制到 `miniprogram_npm/hanzi-writer-wechatmini/index.js` 供项目使用。
+
+> **为什么不用 `npm install hanzi-writer-wechatmini`？** 那是上游 npm 源（作者 `wooaooo`），不含本次时钟修复。若你的项目里 Taro/Vite 能直接解析 npm 包（不走「构建 npm」），也可直接把本仓库 `dist/index.cjs.js` / `dist/index.esm.js` 拷贝进 `node_modules/hanzi-writer-wechatmini/dist/` 覆盖同名文件。
 
 ### 基本用法
 

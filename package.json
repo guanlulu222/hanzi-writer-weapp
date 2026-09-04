@@ -2,11 +2,29 @@
   "name": "hanzi-writer-wechatmini",
   "version": "3.0.2",
   "author": "chien <wooaooo@qq.com>",
-  "description": "Hanzi Writer 微信小程序适配版 — 基于 chanind/hanzi-writer v3.0.0，修复 Canvas 2D 兼容性问题，npm 直装即用。",
+  "description": "Hanzi Writer 微信小程序适配版 — 基于 chanind/hanzi-writer v3.0.0，修复 Canvas 2D 兼容性问题与小程序笔顺动画卡在第一笔的时钟时基 bug，npm 直装即用。",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wooaooo/hanzi-writer-wechatmini.git"
+    "url": "https://github.com/guanlulu222/hanzi-writer-wechat.git"
   },
+  "homepage": "https://github.com/guanlulu222/hanzi-writer-wechat#readme",
+  "bugs": {
+    "url": "https://github.com/guanlulu222/hanzi-writer-wechat/issues"
+  },
+  "keywords": [
+    "hanzi-writer",
+    "hanzi",
+    "chinese-character",
+    "stroke-order",
+    "stroke-animation",
+    "wechat-mini-program",
+    "weapp",
+    "canvas",
+    "汉字",
+    "笔顺",
+    "写字",
+    "小程序"
+  ],
   "main": "dist/index.cjs.js",
   "miniprogram": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
