@@ -28,7 +28,7 @@
   "main": "dist/index.cjs.js",
   "miniprogram": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
-  "types": "dist/types/index.esm.d.ts",
+  "types": "dist/types/HanziWriter.d.ts",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.12.10",
@@ -65,8 +65,9 @@
     "lint-test": "eslint -c .eslintrc src",
     "lint-fix": "eslint --fix --ext .tsx,.ts .",
     "clean": "node -e \"require('fs').rmSync('./dist',{recursive:true,force:true})\"",
-    "build": "npm run clean && rollup -c",
-    "prepublishOnly": "npm run clean && rollup -c && node -e \"require('fs').appendFileSync('./dist/index.cjs.js','\\n')\"",
+    "build:types": "tsc -p tsconfig.types.json",
+    "build": "npm run clean && rollup -c && npm run build:types",
+    "prepublishOnly": "npm run clean && rollup -c && npm run build:types && node -e \"require('fs').appendFileSync('./dist/index.cjs.js','\\n')\"",
     "semantic-release": "semantic-release",
     "prettier": "prettier -w src",
     "typecheck": "tsc --noEmit --skipLibCheck"

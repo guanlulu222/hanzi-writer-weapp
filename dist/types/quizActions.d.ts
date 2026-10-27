@@ -1,0 +1,10 @@
+import { GenericMutation } from './Mutation';
+import Character from './models/Character';
+import { ColorObject, Point } from './typings/types';
+export declare const startQuiz: (character: Character, fadeDuration: number, startStrokeNum: number) => GenericMutation[];
+export declare const startUserStroke: (id: string | number, point: Point) => GenericMutation[];
+export declare const updateUserStroke: (userStrokeId: string | number, points: Point[]) => GenericMutation[];
+export declare const hideUserStroke: (userStrokeId: string | number, duration: number) => GenericMutation[];
+export declare const removeAllUserStrokes: (userStrokeIds: Array<number>) => GenericMutation[];
+export declare const highlightCompleteChar: (character: Character, color: ColorObject | null, duration: number) => GenericMutation[];
+export declare const highlightStroke: (stroke: import("./models/Stroke").default, color: ColorObject | null, speed: number) => GenericMutation<import("./RenderState").default>[];
