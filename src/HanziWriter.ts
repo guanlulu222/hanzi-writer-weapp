@@ -171,6 +171,23 @@ export default class HanziWriter {
     );
   }
 
+  /**
+   * 按当前状态立即重绘一帧，不改变任何显示状态、不触发动画。
+   *
+   * 微信小程序的 canvas 是原生组件：动画播放中每帧重绘，画布位置能跟随
+   * 宿主容器滚动；动画结束后画布停止重绘，宿主 view（overflow 滚动）
+   * 滚动时原生层不再修正位置，会出现字形与背景错位。宿主在滚动结束后
+   * 调用本方法重绘一帧即可纠正。SVG 渲染器下调用同样幂等无副作用。
+   */
+  redraw() {
+    return this._withData(() => {
+      const state = this._renderState?.state;
+      if (state && this._hanziWriterRenderer) {
+        this._hanziWriterRenderer.render(state);
+      }
+    });
+  }
+
   animateCharacter(
     options: {
       onComplete?: OnCompleteFunction;

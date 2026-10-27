@@ -818,6 +818,41 @@ describe('HanziWriter', () => {
     });
   });
 
+  describe('redraw', () => {
+    it('re-renders the current state without changing it', async () => {
+      document.body.innerHTML = '<div id="target"></div>';
+      const writer = HanziWriter.create('target', '人', { charDataLoader });
+      await writer._withDataPromise;
+
+      const renderSpy = jest.spyOn(writer._hanziWriterRenderer!, 'render');
+      const stateBefore = writer._renderState!.state;
+      await writer.redraw();
+
+      expect(renderSpy).toHaveBeenCalledTimes(1);
+      expect(renderSpy.mock.calls[0][0]).toBe(stateBefore);
+      // redraw 不应改变任何显示状态
+      expect(writer._renderState!.state).toBe(stateBefore);
+      renderSpy.mockRestore();
+    });
+
+    it('waits until char data is loaded', async () => {
+      document.body.innerHTML = '<div id="target"></div>';
+      let resolveLoad!: (data: any) => void;
+      const writer = HanziWriter.create('target', '人', {
+        charDataLoader: () =>
+          new Promise((resolve) => {
+            resolveLoad = resolve;
+          }),
+      });
+
+      const redrawPromise = writer.redraw();
+      resolveLoad(ren);
+      await redrawPromise;
+
+      expect(writer._hanziWriterRenderer).toBeTruthy();
+    });
+  });
+
   ([
     { methodLabel: 'Character', stateLabel: 'main' },
     { methodLabel: 'Outline', stateLabel: 'outline' },

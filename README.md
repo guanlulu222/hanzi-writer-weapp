@@ -253,6 +253,11 @@ interface HanziWriterOptions {
 | `quiz(options?)` | 启动笔顺练习模式 |
 | `setCharacter(character)` | 切换汉字 |
 | `updateDimensions({ width, height })` | 动态更新 Canvas 尺寸 |
+| `redraw()` | 按当前状态立即重绘一帧，不改变显示状态、不触发动画 |
+
+> **`redraw()` 的典型场景**：微信小程序的 canvas 是原生组件，动画播放结束后画布停止重绘；
+> 若画布所在的宿主 view 使用 `overflow` 滚动，滚动结束后原生层可能与页面层错位（字形漂移）。
+> 在宿主滚动的 `touchend` 之后调用 `writer.redraw()` 重绘一帧即可纠正。
 
 ### 小程序新增方法
 

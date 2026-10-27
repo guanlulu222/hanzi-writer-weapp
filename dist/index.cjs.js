@@ -1,5 +1,5 @@
 /**
- * Hanzi Writer 微信小程序适配版 v3.0.2 | 基于 chanind/hanzi-writer
+ * Hanzi Writer 微信小程序适配版 v3.1.0 | 基于 chanind/hanzi-writer
  */
 
 'use strict';
@@ -2151,11 +2151,28 @@ class HanziWriter {
       });
     });
   }
+  /**
+   * 按当前状态立即重绘一帧，不改变任何显示状态、不触发动画。
+   *
+   * 微信小程序的 canvas 是原生组件：动画播放中每帧重绘，画布位置能跟随
+   * 宿主容器滚动；动画结束后画布停止重绘，宿主 view（overflow 滚动）
+   * 滚动时原生层不再修正位置，会出现字形与背景错位。宿主在滚动结束后
+   * 调用本方法重绘一帧即可纠正。SVG 渲染器下调用同样幂等无副作用。
+   */
+  redraw() {
+    return this._withData(() => {
+      var _this$_renderState3;
+      const state = (_this$_renderState3 = this._renderState) === null || _this$_renderState3 === void 0 ? void 0 : _this$_renderState3.state;
+      if (state && this._hanziWriterRenderer) {
+        this._hanziWriterRenderer.render(state);
+      }
+    });
+  }
   animateCharacter(options = {}) {
     this.cancelQuiz();
     return this._withData(() => {
-      var _this$_renderState3;
-      return (_this$_renderState3 = this._renderState) === null || _this$_renderState3 === void 0 ? void 0 : _this$_renderState3.run(animateCharacter('main', this._character, this._options.strokeFadeDuration, this._options.strokeAnimationSpeed, this._options.delayBetweenStrokes)).then(res => {
+      var _this$_renderState4;
+      return (_this$_renderState4 = this._renderState) === null || _this$_renderState4 === void 0 ? void 0 : _this$_renderState4.run(animateCharacter('main', this._character, this._options.strokeFadeDuration, this._options.strokeAnimationSpeed, this._options.delayBetweenStrokes)).then(res => {
         var _options$onComplete3;
         (_options$onComplete3 = options.onComplete) === null || _options$onComplete3 === void 0 ? void 0 : _options$onComplete3.call(options, res);
         return res;
@@ -2165,8 +2182,8 @@ class HanziWriter {
   animateStroke(strokeNum, options = {}) {
     this.cancelQuiz();
     return this._withData(() => {
-      var _this$_renderState4;
-      return (_this$_renderState4 = this._renderState) === null || _this$_renderState4 === void 0 ? void 0 : _this$_renderState4.run(animateSingleStroke('main', this._character, fixIndex(strokeNum, this._character.strokes.length), this._options.strokeAnimationSpeed)).then(res => {
+      var _this$_renderState5;
+      return (_this$_renderState5 = this._renderState) === null || _this$_renderState5 === void 0 ? void 0 : _this$_renderState5.run(animateSingleStroke('main', this._character, fixIndex(strokeNum, this._character.strokes.length), this._options.strokeAnimationSpeed)).then(res => {
         var _options$onComplete4;
         (_options$onComplete4 = options.onComplete) === null || _options$onComplete4 === void 0 ? void 0 : _options$onComplete4.call(options, res);
         return res;
@@ -2194,21 +2211,21 @@ class HanziWriter {
   }
   pauseAnimation() {
     return this._withData(() => {
-      var _this$_renderState5;
-      return (_this$_renderState5 = this._renderState) === null || _this$_renderState5 === void 0 ? void 0 : _this$_renderState5.pauseAll();
+      var _this$_renderState6;
+      return (_this$_renderState6 = this._renderState) === null || _this$_renderState6 === void 0 ? void 0 : _this$_renderState6.pauseAll();
     });
   }
   resumeAnimation() {
     return this._withData(() => {
-      var _this$_renderState6;
-      return (_this$_renderState6 = this._renderState) === null || _this$_renderState6 === void 0 ? void 0 : _this$_renderState6.resumeAll();
+      var _this$_renderState7;
+      return (_this$_renderState7 = this._renderState) === null || _this$_renderState7 === void 0 ? void 0 : _this$_renderState7.resumeAll();
     });
   }
   showOutline(options = {}) {
     this._options.showOutline = true;
     return this._withData(() => {
-      var _this$_renderState7;
-      return (_this$_renderState7 = this._renderState) === null || _this$_renderState7 === void 0 ? void 0 : _this$_renderState7.run(showCharacter('outline', this._character, typeof options.duration === 'number' ? options.duration : this._options.strokeFadeDuration)).then(res => {
+      var _this$_renderState8;
+      return (_this$_renderState8 = this._renderState) === null || _this$_renderState8 === void 0 ? void 0 : _this$_renderState8.run(showCharacter('outline', this._character, typeof options.duration === 'number' ? options.duration : this._options.strokeFadeDuration)).then(res => {
         var _options$onComplete6;
         (_options$onComplete6 = options.onComplete) === null || _options$onComplete6 === void 0 ? void 0 : _options$onComplete6.call(options, res);
         return res;
@@ -2218,8 +2235,8 @@ class HanziWriter {
   hideOutline(options = {}) {
     this._options.showOutline = false;
     return this._withData(() => {
-      var _this$_renderState8;
-      return (_this$_renderState8 = this._renderState) === null || _this$_renderState8 === void 0 ? void 0 : _this$_renderState8.run(hideCharacter('outline', this._character, typeof options.duration === 'number' ? options.duration : this._options.strokeFadeDuration)).then(res => {
+      var _this$_renderState9;
+      return (_this$_renderState9 = this._renderState) === null || _this$_renderState9 === void 0 ? void 0 : _this$_renderState9.run(hideCharacter('outline', this._character, typeof options.duration === 'number' ? options.duration : this._options.strokeFadeDuration)).then(res => {
         var _options$onComplete7;
         (_options$onComplete7 = options.onComplete) === null || _options$onComplete7 === void 0 ? void 0 : _options$onComplete7.call(options, res);
         return res;
@@ -2268,8 +2285,8 @@ class HanziWriter {
       mutations = mutations.concat(updateColor(colorName, null, 0));
     }
     return this._withData(() => {
-      var _this$_renderState9;
-      return (_this$_renderState9 = this._renderState) === null || _this$_renderState9 === void 0 ? void 0 : _this$_renderState9.run(mutations).then(res => {
+      var _this$_renderState0;
+      return (_this$_renderState0 = this._renderState) === null || _this$_renderState0 === void 0 ? void 0 : _this$_renderState0.run(mutations).then(res => {
         var _options$onComplete8;
         (_options$onComplete8 = options.onComplete) === null || _options$onComplete8 === void 0 ? void 0 : _options$onComplete8.call(options, res);
         return res;
